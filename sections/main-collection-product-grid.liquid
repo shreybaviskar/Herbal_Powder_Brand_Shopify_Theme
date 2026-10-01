@@ -1,0 +1,115 @@
+<div class="main-collection">
+  <div class="main-collection__container">
+    
+    <header class="main-collection__header">
+      <h1 class="main-collection__title">{{ collection.title | escape }}</h1>
+      {%- if collection.description != blank -%}
+        <div class="main-collection__description">{{ collection.description }}</div>
+      {%- endif -%}
+    </header>
+
+    {%- paginate collection.products by section.settings.products_per_page -%}
+      <div class="main-collection__grid" style="--desktop-columns: {{ section.settings.columns_desktop }};">
+        {%- for product in collection.products -%}
+          {% render 'product-card', product: product %}
+        {%- else -%}
+          <p>No products found in this collection.</p>
+        {%- endfor -%}
+      </div>
+
+      {%- if paginate.pages > 1 -%}
+        <div class="main-collection__pagination">
+          {{ paginate | default_pagination }}
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+    
+  </div>
+</div>
+
+{% stylesheet %}
+  .main-collection {
+    padding: 4rem 2rem;
+    background-color: #ffffff;
+  }
+  
+  .main-collection__container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .main-collection__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .main-collection__title {
+    font-size: 2rem;
+    color: var(--theme-green, #678b6f);
+    margin: 0 0 1rem 0;
+  }
+
+  .main-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  @media screen and (min-width: 768px) {
+    .main-collection__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .main-collection__grid {
+      grid-template-columns: repeat(var(--desktop-columns, 4), 1fr);
+      gap: 3rem;
+    }
+  }
+
+  .main-collection__pagination {
+    margin-top: 4rem;
+    text-align: center;
+  }
+  
+  .main-collection__pagination a, 
+  .main-collection__pagination span {
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    border: 1px solid var(--theme-green, #678b6f);
+    color: var(--theme-green, #678b6f);
+    text-decoration: none;
+  }
+  
+  .main-collection__pagination .current {
+    background-color: var(--theme-green, #678b6f);
+    color: #fff;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product Grid",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "default": 16,
+      "label": "Products per page"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4,
+      "label": "Number of columns on desktop"
+    }
+  ]
+}
+{% endschema %}

@@ -1,17 +1,34 @@
 <div class="featured-collection section-{{ section.id }}">
   <div class="featured-collection__container">
     
-    {%- if section.settings.title != blank -%}
-      <h2 class="featured-collection__heading">{{ section.settings.title | escape }}</h2>
+    <!-- Header: Title on left, Button pushed to right -->
+    <div class="featured-collection__header">
+      {%- if section.settings.title != blank -%}
+        <h2 class="featured-collection__heading">{{ section.settings.title | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.show_view_all and section.settings.collection != blank -%}
+        <a href="{{ collections[section.settings.collection].url }}" class="featured-collection__btn">
+          View All Products
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- assign collection = collections[section.settings.collection] -%}
+    {%- assign desktop_columns = section.settings.columns_desktop -%}
+    
+    <!-- Determine if scrolling is needed -->
+    {%- assign is_scrollable = false -%}
+    {%- if collection != blank and collection.products_count > desktop_columns -%}
+      {%- assign is_scrollable = true -%}
     {%- endif -%}
 
-    <div class="featured-collection__grid" style="--desktop-columns: {{ section.settings.columns_desktop }};">
-      {%- assign collection = collections[section.settings.collection] -%}
+    <div class="featured-collection__grid {% if is_scrollable %}featured-collection__grid--scrollable{% endif %}" style="--desktop-columns: {{ desktop_columns }};">
       
       {%- if collection != blank and collection.products_count > 0 -%}
-        <!-- Dynamic Product Loop -->
         {%- for product in collection.products limit: section.settings.products_to_show -%}
           <a href="{{ product.url }}" class="product-card">
+            
             <div class="product-card__image-wrapper">
               {%- if product.featured_image != blank -%}
                 <img src="{{ product.featured_image | image_url: width: 600 }}" 
@@ -24,30 +41,29 @@
                 {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
               {%- endif -%}
             </div>
-            <div class="product-card__info">
-              <h3 class="product-card__title">{{ product.title }}</h3>
-              <div class="product-card__price">
-                {%- if product.compare_at_price > product.price -%}
-                  <span class="price-item--regular"><s>{{ product.compare_at_price | money_with_currency }}</s></span>
-                {%- endif -%}
-                <span class="price-item--sale">{{ product.price | money_with_currency }}</span>
-              </div>
+
+            <h3 class="product-card__title">{{ product.title }}</h3>
+
+            <div class="product-card__price">
+              {%- if product.compare_at_price > product.price -%}
+                <span class="price-item--regular"><s>{{ product.compare_at_price | money_with_currency }}</s></span>
+              {%- endif -%}
+              <span class="price-item--sale">{{ product.price | money_with_currency }}</span>
             </div>
+
           </a>
         {%- endfor -%}
       {%- else -%}
-        <!-- Generic Placeholder (Shown in Theme Editor when no collection is linked) -->
+        <!-- Theme Editor Placeholders -->
         {%- for i in (1..section.settings.products_to_show) -%}
           <div class="product-card">
             <div class="product-card__image-wrapper">
               {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
               {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
             </div>
-            <div class="product-card__info">
-              <h3 class="product-card__title">Example Product Title {{ i }}</h3>
-              <div class="product-card__price">
-                <span class="price-item--sale">$19.99 USD</span>
-              </div>
+            <h3 class="product-card__title">Example Product {{ i }}</h3>
+            <div class="product-card__price">
+              <span class="price-item--sale">$19.99 USD</span>
             </div>
           </div>
         {%- endfor -%}
@@ -58,10 +74,9 @@
 </div>
 
 {% stylesheet %}
-  /* Theme Colors Based on Logo & Brand */
   :root {
-    --theme-orange: #eba14e; /* Warm orange from your buttons */
-    --theme-green: #678b6f;  /* Muted green from your logo leaves */
+    --theme-orange: #eba14e;
+    --theme-green: #678b6f;
   }
 
   .featured-collection {
@@ -74,35 +89,82 @@
     margin: 0 auto;
   }
 
+  /* Header Layout - Flex space-between pushes button to the right */
+  .featured-collection__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
   .featured-collection__heading {
-    text-align: left;
+    margin: 0;
     font-size: 1.5rem;
     font-family: sans-serif;
     font-weight: 600;
-    margin-bottom: 3rem;
-    color: var(--theme-green); /* Applied theme green to heading */
-    border-left: 4px solid var(--theme-orange); /* Orange accent border */
+    color: var(--theme-green);
+    border-left: 4px solid var(--theme-orange);
     padding-left: 1rem;
   }
 
+  .featured-collection__btn {
+    display: inline-block;
+    background-color: var(--theme-orange);
+    color: #ffffff;
+    padding: 10px 24px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: sans-serif;
+    text-transform: uppercase;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .featured-collection__btn:hover {
+    opacity: 0.8;
+  }
+
+  /* Grid & Scroll Layout */
   .featured-collection__grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
   }
 
-  /* Tablet and Desktop Breakpoints */
   @media screen and (min-width: 768px) {
     .featured-collection__grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(var(--desktop-columns), 1fr);
+    }
+    
+    /* Scrollable overrides */
+    .featured-collection__grid--scrollable {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: thin;
+      padding-bottom: 1.5rem;
+    }
+    
+    .featured-collection__grid--scrollable .product-card {
+      flex: 0 0 calc((100% - ((var(--desktop-columns) - 1) * 2rem)) / var(--desktop-columns));
+      scroll-snap-align: start;
     }
   }
 
-  @media screen and (min-width: 1024px) {
-    .featured-collection__grid {
-      grid-template-columns: repeat(var(--desktop-columns), 1fr);
-      gap: 3rem;
-    }
+  /* Custom Webkit Scrollbar */
+  .featured-collection__grid--scrollable::-webkit-scrollbar {
+    height: 8px;
+  }
+  .featured-collection__grid--scrollable::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 4px;
+  }
+  .featured-collection__grid--scrollable::-webkit-scrollbar-thumb {
+    background-color: var(--theme-orange);
+    border-radius: 4px;
   }
 
   .product-card {
@@ -115,32 +177,27 @@
   }
 
   .product-card:hover {
-    transform: translateY(-5px); /* Subtle hover lift */
+    transform: translateY(-5px);
   }
 
+  /* Fixed Aspect Ratio for Uniform Images */
   .product-card__image-wrapper {
+    position: relative;
     width: 100%;
+    padding-bottom: 110%; /* Forces a uniform height-to-width ratio */
     margin-bottom: 1.5rem;
-    display: flex;
-    justify-content: center;
+    background-color: #fcfcfc;
   }
 
-  .product-card__image {
-    max-width: 100%;
-    height: auto;
-    object-fit: contain;
-  }
-
+  .product-card__image,
   .placeholder-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 300px;
-    background-color: #f9f9f9;
-    fill: #ccc;
-  }
-
-  .product-card__info {
-    text-align: center;
-    max-width: 90%;
+    height: 100%;
+    object-fit: contain; 
+    padding: 1rem;
   }
 
   .product-card__title {
@@ -150,10 +207,10 @@
     font-weight: 500;
     margin: 0 0 0.75rem 0;
     color: #333;
+    text-align: center;
     transition: color 0.2s ease;
   }
 
-  /* Hover effect updates text to theme green */
   .product-card:hover .product-card__title {
     color: var(--theme-green);
   }
@@ -162,14 +219,9 @@
     font-size: 0.85rem;
     font-family: monospace;
     letter-spacing: 0.5px;
-    color: var(--theme-orange); /* Prices highlighted in theme orange */
+    color: var(--theme-orange);
     font-weight: bold;
-  }
-
-  .price-item--regular {
-    color: #999;
-    margin-right: 8px;
-    font-weight: normal;
+    text-align: center;
   }
 {% endstylesheet %}
 
@@ -189,13 +241,19 @@
       "label": "Collection"
     },
     {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View All' button",
+      "default": true
+    },
+    {
       "type": "range",
       "id": "products_to_show",
-      "min": 2,
-      "max": 12,
+      "min": 4,
+      "max": 24,
       "step": 1,
-      "default": 4,
-      "label": "Maximum products to show"
+      "default": 8,
+      "label": "Maximum products to load"
     },
     {
       "type": "range",
@@ -204,7 +262,7 @@
       "max": 6,
       "step": 1,
       "default": 4,
-      "label": "Number of columns on desktop"
+      "label": "Columns on desktop"
     }
   ],
   "presets": [
