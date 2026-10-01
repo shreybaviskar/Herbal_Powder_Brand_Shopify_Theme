@@ -9,6 +9,14 @@
  */
 {
   "sections": {
+    "hero_banner_HXghJN": {
+      "type": "hero-banner",
+      "name": "Full Width Hero Banner",
+      "settings": {
+        "image": "shopify://shop_images/98a75046-79e5-4b60-b8dd-d5c24b6cb9b4._CR0_53_3168_634_SX1920.jpg",
+        "link": ""
+      }
+    },
     "image_with_text_split_f6bACA": {
       "type": "image-with-text-split",
       "name": "Image with text split",
@@ -22,6 +30,7 @@
     }
   },
   "order": [
+    "hero_banner_HXghJN",
     "image_with_text_split_f6bACA"
   ]
 }
