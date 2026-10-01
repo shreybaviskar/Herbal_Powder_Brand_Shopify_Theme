@@ -18,11 +18,20 @@
           <h2 class="image-text-split__heading">{{ section.settings.heading }}</h2>
         {% endif %}
         
-        {% if section.settings.button_label != blank %}
-          <a href="{{ section.settings.button_link }}" class="image-text-split__button">
-            {{ section.settings.button_label }}
-          </a>
-        {% endif %}
+        <!-- Button Container -->
+        <div class="image-text-split__buttons">
+          {% if section.settings.button_label != blank %}
+            <a href="{{ section.settings.button_link }}" class="image-text-split__button" target="_blank" rel="noopener noreferrer">
+              {{ section.settings.button_label }}
+            </a>
+          {% endif %}
+
+          {% if section.settings.button_label_2 != blank %}
+            <a href="{{ section.settings.button_link_2 }}" class="image-text-split__button image-text-split__button--secondary">
+              {{ section.settings.button_label_2 }}
+            </a>
+          {% endif %}
+        </div>
         
         {% if section.settings.subtext != blank %}
           <p class="image-text-split__subtext">{{ section.settings.subtext }}</p>
@@ -44,7 +53,7 @@
   .image-text-split__container {
     display: flex;
     flex-direction: column;
-    border: 1px solid #000; /* Matches the outer border from the image */
+    border: 1px solid #000;
     background-color: #fff;
   }
 
@@ -66,7 +75,7 @@
       width: 50%;
     }
     .image-text-split__text-col {
-      border-left: 1px solid #000; /* Matches the middle divider from the image */
+      border-left: 1px solid #000;
     }
   }
 
@@ -111,15 +120,27 @@
     color: #000;
   }
 
+  .image-text-split__buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
   .image-text-split__button {
     display: inline-block;
-    background-color: #eba14e; /* Matches the orange button from the image */
+    background-color: #eba14e; /* Orange for Amazon */
     color: #fff;
     padding: 12px 32px;
     text-decoration: none;
     font-size: 1rem;
-    margin-bottom: 2rem;
     transition: opacity 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .image-text-split__button--secondary {
+    background-color: #678b6f; /* Theme Green for Store */
   }
 
   .image-text-split__button:hover {
@@ -131,7 +152,7 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-family: 'Courier New', Courier, monospace; /* Matches the typewriter style */
+    font-family: 'Courier New', Courier, monospace;
     color: #333;
   }
 {% endstylesheet %}
@@ -152,15 +173,40 @@
       "default": "Spices That Are Third Party Tested!"
     },
     {
+      "type": "header",
+      "content": "Amazon Button"
+    },
+    {
       "type": "text",
       "id": "button_label",
-      "label": "Button Label",
+      "label": "Amazon Button Label",
       "default": "Shop on Amazon"
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button Link"
+      "label": "Amazon Link",
+      "info": "This link will automatically open in a new tab."
+    },
+    {
+      "type": "header",
+      "content": "Store Collection Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label_2",
+      "label": "Collection Button Label",
+      "default": "Shop All Products"
+    },
+    {
+      "type": "url",
+      "id": "button_link_2",
+      "label": "Collection Link",
+      "info": "Links to your internal store."
+    },
+    {
+      "type": "header",
+      "content": "Additional Text"
     },
     {
       "type": "text",
