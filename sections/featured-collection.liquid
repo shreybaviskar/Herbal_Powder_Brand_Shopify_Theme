@@ -1,0 +1,217 @@
+<div class="featured-collection section-{{ section.id }}">
+  <div class="featured-collection__container">
+    
+    {%- if section.settings.title != blank -%}
+      <h2 class="featured-collection__heading">{{ section.settings.title | escape }}</h2>
+    {%- endif -%}
+
+    <div class="featured-collection__grid" style="--desktop-columns: {{ section.settings.columns_desktop }};">
+      {%- assign collection = collections[section.settings.collection] -%}
+      
+      {%- if collection != blank and collection.products_count > 0 -%}
+        <!-- Dynamic Product Loop -->
+        {%- for product in collection.products limit: section.settings.products_to_show -%}
+          <a href="{{ product.url }}" class="product-card">
+            <div class="product-card__image-wrapper">
+              {%- if product.featured_image != blank -%}
+                <img src="{{ product.featured_image | image_url: width: 600 }}" 
+                     alt="{{ product.featured_image.alt | escape }}" 
+                     class="product-card__image" 
+                     loading="lazy" 
+                     width="{{ product.featured_image.width }}" 
+                     height="{{ product.featured_image.height }}">
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+            <div class="product-card__info">
+              <h3 class="product-card__title">{{ product.title }}</h3>
+              <div class="product-card__price">
+                {%- if product.compare_at_price > product.price -%}
+                  <span class="price-item--regular"><s>{{ product.compare_at_price | money_with_currency }}</s></span>
+                {%- endif -%}
+                <span class="price-item--sale">{{ product.price | money_with_currency }}</span>
+              </div>
+            </div>
+          </a>
+        {%- endfor -%}
+      {%- else -%}
+        <!-- Generic Placeholder (Shown in Theme Editor when no collection is linked) -->
+        {%- for i in (1..section.settings.products_to_show) -%}
+          <div class="product-card">
+            <div class="product-card__image-wrapper">
+              {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+              {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            <div class="product-card__info">
+              <h3 class="product-card__title">Example Product Title {{ i }}</h3>
+              <div class="product-card__price">
+                <span class="price-item--sale">$19.99 USD</span>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+    
+  </div>
+</div>
+
+{% stylesheet %}
+  /* Theme Colors Based on Logo & Brand */
+  :root {
+    --theme-orange: #eba14e; /* Warm orange from your buttons */
+    --theme-green: #678b6f;  /* Muted green from your logo leaves */
+  }
+
+  .featured-collection {
+    padding: 4rem 2rem;
+    background-color: #ffffff;
+  }
+  
+  .featured-collection__container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .featured-collection__heading {
+    text-align: left;
+    font-size: 1.5rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    margin-bottom: 3rem;
+    color: var(--theme-green); /* Applied theme green to heading */
+    border-left: 4px solid var(--theme-orange); /* Orange accent border */
+    padding-left: 1rem;
+  }
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  /* Tablet and Desktop Breakpoints */
+  @media screen and (min-width: 768px) {
+    .featured-collection__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .featured-collection__grid {
+      grid-template-columns: repeat(var(--desktop-columns), 1fr);
+      gap: 3rem;
+    }
+  }
+
+  .product-card {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px); /* Subtle hover lift */
+  }
+
+  .product-card__image-wrapper {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .product-card__image {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .placeholder-svg {
+    width: 100%;
+    height: 300px;
+    background-color: #f9f9f9;
+    fill: #ccc;
+  }
+
+  .product-card__info {
+    text-align: center;
+    max-width: 90%;
+  }
+
+  .product-card__title {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    font-family: sans-serif;
+    font-weight: 500;
+    margin: 0 0 0.75rem 0;
+    color: #333;
+    transition: color 0.2s ease;
+  }
+
+  /* Hover effect updates text to theme green */
+  .product-card:hover .product-card__title {
+    color: var(--theme-green);
+  }
+
+  .product-card__price {
+    font-size: 0.85rem;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+    color: var(--theme-orange); /* Prices highlighted in theme orange */
+    font-weight: bold;
+  }
+
+  .price-item--regular {
+    color: #999;
+    margin-right: 8px;
+    font-weight: normal;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Featured products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4,
+      "label": "Maximum products to show"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "Number of columns on desktop"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection",
+      "category": "Collection"
+    }
+  ]
+}
+{% endschema %}

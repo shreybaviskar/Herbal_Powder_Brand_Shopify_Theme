@@ -21,16 +21,27 @@
       "type": "image-with-text-split",
       "name": "Image with text split",
       "settings": {
-        "image": "shopify://shop_images/pharma-medicines-hi-fi-product-page.png",
-        "heading": "Spices That Are Third Party Tested!",
+        "image": "shopify://shop_images/herbal-powder-brand-orange-green-theme.png",
+        "heading": "Herbal Powders, Naturally Good",
         "button_label": "Shop on Amazon",
         "button_link": "",
-        "subtext": "WE DO SPICES, YOU DO MAGIC!"
+        "subtext": "PURE HERBAL POWDERS FOR YOUR EVERYDAY WELLNESS"
+      }
+    },
+    "featured_collection_jmy4Wq": {
+      "type": "featured-collection",
+      "name": "Featured Collection",
+      "settings": {
+        "title": "Featured products",
+        "collection": "",
+        "products_to_show": 4,
+        "columns_desktop": 4
       }
     }
   },
   "order": [
     "hero_banner_HXghJN",
-    "image_with_text_split_f6bACA"
+    "image_with_text_split_f6bACA",
+    "featured_collection_jmy4Wq"
   ]
 }
