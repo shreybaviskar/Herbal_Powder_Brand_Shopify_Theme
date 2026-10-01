@@ -17,7 +17,14 @@
     <!-- Navigation -->
     <nav class="header-nav">
       <ul class="nav-list">
-        {%- for link in linklists[section.settings.menu].links -%}
+        {%- assign menu_linklist = section.settings.menu -%}
+        
+        <!-- Fallback if the setting is empty -->
+        {%- if menu_linklist == blank -%}
+          {%- assign menu_linklist = linklists['main-menu'] -%}
+        {%- endif -%}
+
+        {%- for link in menu_linklist.links -%}
           <li class="nav-item">
             <a href="{{ link.url }}" class="nav-link {% if link.active %}nav-link--active{% endif %}">
               {{ link.title }}
@@ -26,6 +33,9 @@
               {%- endif -%}
             </a>
           </li>
+        {%- else -%}
+          <!-- This will show up if the menu is still not linking properly -->
+          <li class="nav-item"><span class="nav-link" style="color: red;">Please select a menu in Theme settings</span></li>
         {%- endfor -%}
       </ul>
     </nav>
@@ -54,6 +64,11 @@
 </header>
 
 <style>
+  .header-nav {
+    margin-left: 40px; /* Adjust this value for the space between logo and menu */
+    margin-right: auto; /* Pushes the icons to the far right */
+  }
+
   .site-header {
     border-bottom: 1px solid #000;
     padding: 20px 40px;
@@ -72,8 +87,8 @@
   }
   .header-logo img {
     display: block;
-    background: #c4c4c4; /* Gray background to match your placeholder image */
-    padding: 10px;
+    background: transparent;
+    padding: 0;
   }
   .header-nav .nav-list {
     display: flex;
