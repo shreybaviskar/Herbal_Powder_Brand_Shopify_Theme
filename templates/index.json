@@ -9,12 +9,19 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "image_with_text_split_f6bACA": {
+      "type": "image-with-text-split",
+      "name": "Image with text split",
+      "settings": {
+        "image": "shopify://shop_images/pharma-medicines-hi-fi-product-page.png",
+        "heading": "Spices That Are Third Party Tested!",
+        "button_label": "Shop on Amazon",
+        "button_link": "",
+        "subtext": "WE DO SPICES, YOU DO MAGIC!"
+      }
     }
   },
   "order": [
-    "main"
+    "image_with_text_split_f6bACA"
   ]
 }

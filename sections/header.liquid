@@ -1,76 +1,141 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+<header class="site-header" style="background-color: {{ section.settings.bg_color }};">
+  <div class="header-container">
+    
+    <!-- Logo -->
+    <div class="header-logo">
+      <a href="{{ routes.root_url }}">
+        {%- if section.settings.logo != blank -%}
+          <img src="{{ section.settings.logo | img_url: 'master' }}" 
+               alt="{{ shop.name }}" 
+               style="max-width: {{ section.settings.logo_max_width }}px;">
+        {%- else -%}
+          <span class="logo-placeholder">{{ shop.name }}</span>
+        {%- endif -%}
+      </a>
+    </div>
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+    <!-- Navigation -->
+    <nav class="header-nav">
+      <ul class="nav-list">
+        {%- for link in linklists[section.settings.menu].links -%}
+          <li class="nav-item">
+            <a href="{{ link.url }}" class="nav-link {% if link.active %}nav-link--active{% endif %}">
+              {{ link.title }}
+              {%- if link.links.size > 0 -%}
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.2"/></svg>
+              {%- endif -%}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      <shopify-account menu="{{ section.settings.customer_account_menu }}">
-        {{ 'icon-account.svg' | inline_asset_content }}
-      </shopify-account>
-    {% endif %}
+    <!-- Icons -->
+    <div class="header-icons">
+      <!-- Search Icon -->
+      <a href="{{ routes.search_url }}" class="icon-link">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </a>
+      
+      <!-- Account Icon -->
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" class="icon-link">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </a>
+      {%- endif -%}
+      
+      <!-- Cart Icon -->
+      <a href="{{ routes.cart_url }}" class="icon-link">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+      </a>
+    </div>
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
-      {% endif %}
-
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
   </div>
 </header>
 
-{% stylesheet %}
-  header {
-    height: 5rem;
+<style>
+  .site-header {
+    border-bottom: 1px solid #000;
+    padding: 20px 40px;
+    font-family: Courier, monospace; /* Matches the skeletal font in the image */
+  }
+  .header-container {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
+    max-width: 1600px;
+    margin: 0 auto;
   }
-  header a {
-    position: relative;
+  .header-logo a {
     text-decoration: none;
-    color: var(--color-foreground);
+    color: #000;
+  }
+  .header-logo img {
+    display: block;
+    background: #c4c4c4; /* Gray background to match your placeholder image */
+    padding: 10px;
+  }
+  .header-nav .nav-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 32px;
+  }
+  .nav-link {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 8px;
   }
-  header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
+  .nav-link--active {
+    text-decoration: underline;
+    text-underline-offset: 4px;
   }
-  header svg {
-    width: 2rem;
-  }
-  header .header__menu,
-  header .header__icons {
+  .header-icons {
     display: flex;
-    gap: 1rem;
+    gap: 20px;
+    align-items: center;
   }
-{% endstylesheet %}
+  .icon-link {
+    color: #000;
+    text-decoration: none;
+    display: flex;
+  }
+</style>
 
 {% schema %}
 {
-  "name": "t:general.header",
+  "name": "Header",
   "settings": [
     {
-      "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_max_width",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Custom logo width",
+      "default": 120
     },
     {
       "type": "link_list",
-      "id": "customer_account_menu",
-      "label": "t:labels.customer_account_menu",
-      "default": "customer-account-main-menu"
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
     }
   ]
 }

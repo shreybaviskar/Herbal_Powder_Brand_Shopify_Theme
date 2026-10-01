@@ -1,0 +1,179 @@
+<div class="image-text-split">
+  <div class="image-text-split__container">
+    
+    <!-- Image Column -->
+    <div class="image-text-split__image-col">
+      {% if section.settings.image != blank %}
+        {{ section.settings.image | image_url: width: 1200 | image_tag: class: 'image-text-split__image', loading: 'lazy' }}
+      {% else %}
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+    </div>
+
+    <!-- Text Column -->
+    <div class="image-text-split__text-col">
+      <div class="image-text-split__content">
+        
+        {% if section.settings.heading != blank %}
+          <h2 class="image-text-split__heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        
+        {% if section.settings.button_label != blank %}
+          <a href="{{ section.settings.button_link }}" class="image-text-split__button">
+            {{ section.settings.button_label }}
+          </a>
+        {% endif %}
+        
+        {% if section.settings.subtext != blank %}
+          <p class="image-text-split__subtext">{{ section.settings.subtext }}</p>
+        {% endif %}
+        
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+{% stylesheet %}
+  .image-text-split {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .image-text-split__container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #000; /* Matches the outer border from the image */
+    background-color: #fff;
+  }
+
+  @media (min-width: 768px) {
+    .image-text-split__container {
+      flex-direction: row;
+    }
+  }
+
+  .image-text-split__image-col,
+  .image-text-split__text-col {
+    flex: 1;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .image-text-split__image-col,
+    .image-text-split__text-col {
+      width: 50%;
+    }
+    .image-text-split__text-col {
+      border-left: 1px solid #000; /* Matches the middle divider from the image */
+    }
+  }
+
+  .image-text-split__image-col {
+    display: flex;
+  }
+
+  .image-text-split__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .placeholder-svg {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    fill: #ccc;
+  }
+
+  .image-text-split__text-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .image-text-split__content {
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .image-text-split__heading {
+    font-size: 3rem;
+    line-height: 1.2;
+    margin: 0 0 2rem 0;
+    font-weight: 400;
+    color: #000;
+  }
+
+  .image-text-split__button {
+    display: inline-block;
+    background-color: #eba14e; /* Matches the orange button from the image */
+    color: #fff;
+    padding: 12px 32px;
+    text-decoration: none;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    transition: opacity 0.2s ease;
+  }
+
+  .image-text-split__button:hover {
+    opacity: 0.8;
+  }
+
+  .image-text-split__subtext {
+    margin: 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Courier New', Courier, monospace; /* Matches the typewriter style */
+    color: #333;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Image with text split",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Spices That Are Third Party Tested!"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Shop on Amazon"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "WE DO SPICES, YOU DO MAGIC!"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with text split",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

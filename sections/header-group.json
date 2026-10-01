@@ -13,10 +13,25 @@
   "sections": {
     "header": {
       "type": "header",
-      "settings": {}
+      "settings": {
+        "logo_max_width": 100,
+        "menu": ""
+      }
+    },
+    "announcement_bar_mHgwzD": {
+      "type": "announcement-bar",
+      "name": "Announcement Bar",
+      "settings": {
+        "show_announcement": true,
+        "text": "Welcome to our store, where nature's bounty fills your pantry!",
+        "link": "",
+        "bg_color": "#060d14",
+        "text_color": "#ffffff"
+      }
     }
   },
   "order": [
+    "announcement_bar_mHgwzD",
     "header"
-  ],
+  ]
 }
