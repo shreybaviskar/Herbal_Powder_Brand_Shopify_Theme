@@ -1,60 +1,120 @@
-<div class="product-page">
+<div class="product-page section-{{ section.id }}">
   <div class="product-page__container">
     
-    <!-- Product Media -->
-    <div class="product-page__media">
-      {%- if product.selected_or_first_available_variant.featured_image != blank -%}
-        <img src="{{ product.selected_or_first_available_variant.featured_image | image_url: width: 1000 }}" 
-             alt="{{ product.title | escape }}" 
-             class="product-page__main-image"
-             id="MainProductImage">
+    <!-- Left Side: Controlled Main Viewer & Thumbnail Row -->
+    <div class="product-page__media-gallery">
+      {%- if product.media.size > 0 -%}
+        {%- assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
+        
+        <!-- Main Image Viewer -->
+        <div class="product-page__main-image-wrapper" id="MainImageWrapper">
+          <img src="{{ featured_media | image_url: width: 1200 }}" 
+               alt="{{ featured_media.alt | escape }}" 
+               id="ProductMainImage"
+               class="product-page__main-img"
+               loading="lazy">
+        </div>
+
+        <!-- Thumbnails Row (Handles 5+ images cleanly with horizontal scroll) -->
+        {%- if product.media.size > 1 -%}
+          <div class="product-page__thumbnails-row">
+            {%- for media in product.media -%}
+              <div class="product-page__thumb-item {% if media == featured_media %}is-active{% endif %}" 
+                   data-display="{{ media | image_url: width: 1200 }}"
+                   data-highres="{{ media | image_url: width: 2400 }}">
+                <img src="{{ media | image_url: width: 300 }}" alt="{{ media.alt | escape }}" loading="lazy">
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
       {%- else -%}
-        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg product-page__main-image' }}
+        <div class="product-page__main-image-wrapper">
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
       {%- endif -%}
     </div>
 
-    <!-- Product Info -->
-    <div class="product-page__info">
-      {%- for block in section.blocks -%}
-        {%- case block.type -%}
-          
-          {%- when 'title' -%}
-            <h1 class="product-page__title" {{ block.shopify_attributes }}>{{ product.title }}</h1>
+    <!-- Right Side: Sticky Information Column -->
+    <div class="product-page__info-column">
+      <div class="product-page__sticky-wrapper">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
             
-          {%- when 'price' -%}
-            <div class="product-page__price" {{ block.shopify_attributes }}>
-              {{ product.price | money_with_currency }}
-            </div>
-            
-          {%- when 'buy_buttons' -%}
-            <div class="product-page__form" {{ block.shopify_attributes }}>
-              {% form 'product', product %}
-                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                
-                <div class="product-page__quantity">
-                  <label for="Quantity">Quantity</label>
-                  <input type="number" id="Quantity" name="quantity" value="1" min="1">
+            {%- when 'title' -%}
+              <h1 class="product-page__title" {{ block.shopify_attributes }}>{{ product.title }}</h1>
+              
+            {%- when 'price' -%}
+              <div class="product-page__price" {{ block.shopify_attributes }}>
+                {%- if product.compare_at_price > product.price -%}
+                  <span class="price--regular"><s>{{ product.compare_at_price | money_with_currency }}</s></span>
+                {%- endif -%}
+                <span class="price--sale">{{ product.price | money_with_currency }}</span>
+              </div>
+
+            {%- when 'bullet_points' -%}
+              {%- if block.settings.bullets != blank -%}
+                <div class="product-page__bullets rte" {{ block.shopify_attributes }}>
+                  {{ block.settings.bullets }}
                 </div>
-                
-                <button type="submit" class="product-page__add-to-cart" {% unless product.available %}disabled{% endunless %}>
-                  {% if product.available %}
-                    Add to Cart
-                  {% else %}
-                    Sold Out
-                  {% endif %}
-                </button>
-              {% endform %}
-            </div>
-            
-          {%- when 'description' -%}
-            <div class="product-page__description" {{ block.shopify_attributes }}>
-              {{ product.description }}
-            </div>
-            
-        {%- endcase -%}
-      {%- endfor -%}
+              {%- endif -%}
+
+            {%- when 'amazon_button' -%}
+              <div class="product-page__amazon-wrapper" {{ block.shopify_attributes }}>
+                {%- if block.settings.amazon_link != blank -%}
+                  <a href="{{ block.settings.amazon_link }}" class="btn-amazon" target="_blank" rel="noopener noreferrer">
+                    {{ block.settings.button_label }}
+                  </a>
+                {%- else -%}
+                  <button class="btn-amazon btn-amazon--disabled" disabled>Amazon Link Missing</button>
+                {%- endif -%}
+              </div>
+              
+            {%- when 'description' -%}
+              <div class="product-page__description rte" {{ block.shopify_attributes }}>
+                {{ product.description }}
+              </div>
+              
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
     </div>
     
+  </div>
+
+  <!-- You May Also Like Section -->
+  <div class="product-recommendations" id="ProductRecommendations" data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=4&intent=related">
+    {%- if recommendations.performed and recommendations.products_count > 0 -%}
+      <div class="recommendations-container">
+        <h2 class="recommendations__title">You May Also Like</h2>
+        <div class="recommendations__grid">
+          {%- for recommendation in recommendations.products -%}
+            <a href="{{ recommendation.url }}" class="product-card">
+              <div class="product-card__image-wrapper">
+                {%- if recommendation.featured_image != blank -%}
+                  <img src="{{ recommendation.featured_image | image_url: width: 600 }}" 
+                       alt="{{ recommendation.featured_image.alt | escape }}" 
+                       class="product-card__image" loading="lazy">
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </div>
+              <h3 class="product-card__title">{{ recommendation.title }}</h3>
+              <div class="product-card__price">
+                <span class="price-item--sale">{{ recommendation.price | money_with_currency }}</span>
+              </div>
+            </a>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <!-- Lightbox Modal for Zooming Photos -->
+  <div class="image-lightbox-modal" id="ImageLightbox">
+    <button class="lightbox-close" id="LightboxClose">&times;</button>
+    <div class="lightbox-content">
+      <img src="" alt="Zoomed View" id="LightboxImg">
+    </div>
   </div>
 </div>
 
@@ -65,96 +125,393 @@
   }
 
   .product-page__container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 3rem;
   }
 
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 990px) {
     .product-page__container {
       flex-direction: row;
+      align-items: flex-start;
+      gap: 5rem;
     }
   }
 
-  .product-page__media,
-  .product-page__info {
-    flex: 1;
+  /* Left Side: Controlled Media Gallery */
+  .product-page__media-gallery {
     width: 100%;
   }
 
-  .product-page__main-image {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
+  @media screen and (min-width: 990px) {
+    .product-page__media-gallery {
+      width: 55%;
+      position: sticky;
+      top: 30px;
+    }
+  }
+
+  .product-page__main-image-wrapper {
+    background-color: #fcfcfc;
     border: 1px solid #eee;
+    overflow: hidden;
+    cursor: zoom-in;
+    margin-bottom: 1rem;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-page__main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 1rem;
+    display: block;
+  }
+
+  /* Thumbnails Row (Handles 5+ images cleanly) */
+  .product-page__thumbnails-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: thin;
+  }
+
+  .product-page__thumb-item {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    background-color: #fcfcfc;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    overflow: hidden;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+  }
+
+  .product-page__thumb-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px;
+  }
+
+  .product-page__thumb-item:hover {
+    opacity: 1;
+  }
+
+  .product-page__thumb-item.is-active {
+    opacity: 1;
+    border-color: var(--theme-green, #678b6f);
+    border-width: 2px;
+  }
+
+  /* Right Side: Sticky Info Column */
+  .product-page__info-column {
+    width: 100%;
+  }
+
+  @media screen and (min-width: 990px) {
+    .product-page__info-column {
+      width: 45%;
+    }
   }
 
   .product-page__title {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
+    line-height: 1.2;
     margin: 0 0 1rem 0;
     color: var(--theme-green, #678b6f);
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
   }
 
   .product-page__price {
     font-size: 1.5rem;
     font-weight: bold;
     color: var(--theme-orange, #eba14e);
-    margin-bottom: 2rem;
-  }
-
-  .product-page__form {
-    margin-bottom: 2rem;
-    padding: 2rem 0;
-    border-top: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-  }
-
-  .product-page__quantity {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    font-family: 'Courier New', Courier, monospace;
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    gap: 15px;
   }
 
-  .product-page__quantity input {
-    width: 100px;
-    padding: 10px;
-    border: 1px solid #ccc;
+  .price--regular s {
+    color: #999;
+    font-weight: normal;
   }
 
-  .product-page__add-to-cart {
-    width: 100%;
-    padding: 15px;
-    background-color: var(--theme-orange, #eba14e);
-    color: white;
-    border: none;
+  /* Bullet Points */
+  .product-page__bullets {
+    margin-bottom: 1.5rem;
+    font-family: sans-serif;
+    color: #444;
+  }
+
+  .product-page__bullets ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .product-page__bullets li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+    font-size: 1rem;
+  }
+
+  .product-page__bullets li::before {
+    content: '•';
+    color: var(--theme-orange, #eba14e);
+    font-size: 1.5rem;
+    position: absolute;
+    left: 0;
+    top: -4px;
+  }
+
+  .product-page__bullets li strong {
+    color: var(--theme-green, #678b6f);
+  }
+
+  /* Amazon Button */
+  .product-page__amazon-wrapper {
+    margin: 2rem 0;
+    padding: 2rem 0;
+    border-top: 1px dashed #ccc;
+    border-bottom: 1px dashed #ccc;
+  }
+
+  .btn-amazon {
+    display: block;
+    background-color: var(--theme-orange, #eba14e); 
+    color: #fff;
+    padding: 15px 40px;
     font-size: 1.1rem;
     font-weight: bold;
-    cursor: pointer;
     text-transform: uppercase;
-    transition: opacity 0.2s;
+    text-decoration: none;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    width: 100%;
+    font-family: sans-serif;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
 
-  .product-page__add-to-cart:hover {
-    opacity: 0.9;
-  }
-
-  .product-page__add-to-cart:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  .btn-amazon:hover {
+    background-color: #d99244;
   }
 
   .product-page__description {
-    line-height: 1.6;
+    line-height: 1.8;
     color: #444;
+    font-family: sans-serif;
+  }
+
+  /* Lightbox Modal Styles */
+  .image-lightbox-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .image-lightbox-modal.is-open {
+    display: flex;
+  }
+
+  .lightbox-content {
+    max-width: 90%;
+    max-height: 90vh;
+  }
+
+  .lightbox-content img {
+    width: 100%;
+    height: auto;
+    max-height: 90vh;
+    object-fit: contain;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 3rem;
+    cursor: pointer;
+  }
+
+  /* You May Also Like Section */
+  .product-recommendations {
+    margin-top: 6rem;
+    border-top: 1px solid #eee;
+    padding-top: 4rem;
+  }
+
+  .recommendations-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .recommendations__title {
+    text-align: center;
+    color: var(--theme-green, #678b6f);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .recommendations__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .recommendations__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .product-card {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .product-card__image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 110%;
+    margin-bottom: 1.5rem;
+    background-color: #fcfcfc;
+    border: 1px solid #eee;
+  }
+
+  .product-card__image,
+  .placeholder-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 1rem;
+  }
+
+  .product-card__title {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    font-family: sans-serif;
+    font-weight: 500;
+    margin: 0 0 0.75rem 0;
+    color: #333;
+    text-align: center;
+  }
+
+  .product-card__price {
+    font-size: 0.85rem;
+    font-family: monospace;
+    color: var(--theme-orange, #eba14e);
+    font-weight: bold;
+    text-align: center;
   }
 {% endstylesheet %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 1. Thumbnail Switcher Logic
+    const mainImg = document.getElementById('ProductMainImage');
+    const thumbnails = document.querySelectorAll('.product-page__thumb-item');
+
+    thumbnails.forEach(thumb => {
+      thumb.addEventListener('click', function() {
+        thumbnails.forEach(t => t.classList.remove('is-active'));
+        this.classList.add('is-active');
+
+        const displayUrl = this.getAttribute('data-display');
+        mainImg.src = displayUrl;
+      });
+    });
+
+    // 2. Lightbox Zoom on Click
+    const lightbox = document.getElementById('ImageLightbox');
+    const lightboxImg = document.getElementById('LightboxImg');
+    const closeBtn = document.getElementById('LightboxClose');
+    const mainImgWrapper = document.getElementById('MainImageWrapper');
+
+    if (mainImgWrapper) {
+      mainImgWrapper.addEventListener('click', function() {
+        // Find current active thumbnail or main image high-res url
+        const activeThumb = document.querySelector('.product-page__thumb-item.is-active');
+        const highresUrl = activeThumb ? activeThumb.getAttribute('data-highres') : mainImg.src;
+        
+        lightboxImg.src = highresUrl;
+        lightbox.classList.add('is-open');
+      });
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('is-open');
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+    if (lightbox) {
+      lightbox.addEventListener('click', function(e) {
+        if (e.target === lightbox) {
+          closeLightbox();
+        }
+      });
+    }
+
+    // 3. Dynamic Product Recommendations Fetcher
+    const recommendationsSection = document.getElementById('ProductRecommendations');
+    if (recommendationsSection) {
+      const url = recommendationsSection.dataset.url;
+      fetch(url)
+        .then(response => response.text())
+        .then(text => {
+          const html = document.createElement('div');
+          html.innerHTML = text;
+          const recommendations = html.querySelector('.product-recommendations');
+          if (recommendations && recommendations.innerHTML.trim() !== '') {
+            recommendationsSection.innerHTML = recommendations.innerHTML;
+          }
+        })
+        .catch(e => {
+          console.error(e);
+        });
+    }
+  });
+</script>
 
 {% schema %}
 {
   "name": "Product Information",
+  "settings": [],
   "blocks": [
     {
       "type": "title",
@@ -167,13 +524,40 @@
       "limit": 1
     },
     {
-      "type": "buy_buttons",
-      "name": "Buy Buttons",
-      "limit": 1
+      "type": "bullet_points",
+      "name": "Key Features (Bullets)",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "bullets",
+          "label": "Feature Bullets",
+          "default": "<ul><li><strong>USDA Certified Organic:</strong> Pure, high-quality product.</li><li><strong>Lab Tested:</strong> Screened for heavy metals.</li><li><strong>Steam Sterilized:</strong> Non-irradiated to maintain flavor.</li></ul>"
+        }
+      ]
+    },
+    {
+      "type": "amazon_button",
+      "name": "Shop on Amazon Button",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label",
+          "default": "Shop on Amazon"
+        },
+        {
+          "type": "url",
+          "id": "amazon_link",
+          "label": "Amazon Link",
+          "info": "Use a dynamic source to connect a custom metafield for each product."
+        }
+      ]
     },
     {
       "type": "description",
-      "name": "Description",
+      "name": "Full Description",
       "limit": 1
     }
   ]
