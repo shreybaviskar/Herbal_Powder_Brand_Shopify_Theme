@@ -42,10 +42,27 @@
 
     <!-- Icons -->
     <div class="header-icons">
-      <!-- Search Icon -->
-      <a href="{{ routes.search_url }}" class="icon-link">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      </a>
+      <!-- Dropdown Search -->
+      <div class="header-search">
+        <button type="button" class="icon-link search-toggle" id="SearchToggle" aria-expanded="false">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+
+        <div class="search-dropdown" id="SearchDropdown">
+          <form action="{{ routes.search_url }}" method="get" role="search" class="search-dropdown__form">
+            <!-- Limit search to products and collections -->
+            <input type="hidden" name="type" value="product,collection">
+            <input type="hidden" name="options[prefix]" value="last">
+            
+            <input type="search" name="q" id="SearchDropdownInput" class="search-dropdown__input" placeholder="Search products or collections..." autocomplete="off">
+            <button type="submit" class="search-dropdown__submit">Search</button>
+          </form>
+          
+          <div class="search-dropdown__results" id="SearchDropdownResults" style="display: none;">
+            <!-- Live predictive results will inject here -->
+          </div>
+        </div>
+      </div>
       
       <!-- Account Icon -->
       {%- if shop.customer_accounts_enabled -%}
@@ -64,6 +81,151 @@
 </header>
 
 <style>
+  /* Ensure header container is the anchor for the absolute dropdown */
+  .header-container {
+    position: relative;
+    /* ... keep your existing properties ... */
+  }
+
+  .header-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .search-dropdown {
+    display: none;
+    position: absolute;
+    top: 150%;
+    right: 0;
+    width: 350px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    z-index: 100;
+  }
+
+  .search-dropdown.is-active {
+    display: block;
+  }
+
+  .search-dropdown__form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .search-dropdown__input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+  }
+
+  .search-dropdown__input:focus {
+    outline: none;
+    border-color: #678b6f; /* Theme Green */
+  }
+
+  .search-dropdown__submit {
+    background-color: #eba14e; /* Theme Orange */
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+  }
+
+  .search-dropdown__results {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .predictive-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .predictive-group h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.85rem;
+    color: #678b6f;
+    text-transform: uppercase;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.25rem;
+  }
+
+  .predictive-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .predictive-group li {
+    margin-bottom: 0.5rem;
+  }
+
+  .predictive-collection {
+    text-decoration: none;
+    color: #333;
+    font-size: 0.9rem;
+    font-family: sans-serif;
+  }
+
+  .predictive-collection:hover {
+    color: #eba14e;
+  }
+
+  .predictive-product {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #333;
+  }
+
+  .predictive-product img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    background: #f4f4f4;
+  }
+
+  .predictive-product__info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .predictive-product__title {
+    font-size: 0.85rem;
+    font-family: sans-serif;
+  }
+
+  .predictive-product__price {
+    font-size: 0.8rem;
+    color: #eba14e;
+    font-weight: bold;
+    font-family: monospace;
+  }
+  
+  .predictive-empty {
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    padding: 1rem 0;
+  }
   .header-nav {
     margin-left: 40px; /* Adjust this value for the space between logo and menu */
     margin-right: auto; /* Pushes the icons to the far right */
@@ -120,6 +282,116 @@
     display: flex;
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('SearchToggle');
+    const dropdown = document.getElementById('SearchDropdown');
+    const input = document.getElementById('SearchDropdownInput');
+    const resultsContainer = document.getElementById('SearchDropdownResults');
+    let debounceTimer;
+
+    if (!toggleBtn || !dropdown || !input || !resultsContainer) return;
+
+    // Toggle dropdown visibility
+    toggleBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropdown.classList.toggle('is-active');
+      if (dropdown.classList.contains('is-active')) {
+        input.focus();
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!dropdown.contains(e.target) && !toggleBtn.contains(e.target) && !input.contains(e.target)) {
+        dropdown.classList.remove('is-active');
+      }
+    });
+
+    // Handle LIVE typing (Dynamic Search)
+    input.addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      const query = this.value.trim();
+
+      if (query.length < 2) {
+        resultsContainer.innerHTML = '';
+        resultsContainer.style.display = 'none';
+        return;
+      }
+
+      // Show instant visual feedback that it is searching
+      resultsContainer.innerHTML = '<div class="predictive-empty">Searching...</div>';
+      resultsContainer.style.display = 'block';
+
+      // Wait 300ms after the user stops typing to fetch results
+      debounceTimer = setTimeout(() => {
+        // Use Shopify's official predictive search API with prefix matching
+        const fetchUrl = `/search/suggest.json?q=${encodeURIComponent(query)}*&resources[type]=product,collection&resources[limit]=6&resources[options][prefix]=last`;
+
+        fetch(fetchUrl)
+          .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+          })
+          .then(data => {
+            const products = data.resources.results.products || [];
+            const collections = data.resources.results.collections || [];
+            let html = '';
+
+            // Render Collections
+            if (collections.length > 0) {
+              html += '<div class="predictive-group"><h4>Collections</h4><ul>';
+              collections.forEach(collection => {
+                html += `<li><a href="${collection.url}" class="predictive-collection">${collection.title}</a></li>`;
+              });
+              html += '</ul></div>';
+            }
+
+            // Render Products
+            if (products.length > 0) {
+              html += '<div class="predictive-group"><h4>Products</h4><ul>';
+              products.forEach(product => {
+                html += `<li>
+                           <a href="${product.url}" class="predictive-product">
+                             ${product.image ? `<img src="${product.image}" alt="">` : ''}
+                             <div class="predictive-product__info">
+                               <span class="predictive-product__title">${product.title}</span>
+                               <span class="predictive-product__price">${product.price}</span>
+                             </div>
+                           </a>
+                         </li>`;
+              });
+              html += '</ul></div>';
+            }
+
+            // If no results are found
+            if (html === '') {
+              html = '<div class="predictive-empty">No results found for "' + query + '"</div>';
+            }
+
+            // Inject the dynamic HTML into the dropdown
+            resultsContainer.innerHTML = html;
+          })
+          .catch(error => {
+            console.error("Predictive search error:", error);
+            resultsContainer.innerHTML = '<div class="predictive-empty">Error loading results. Please press Enter to search.</div>';
+          });
+      }, 300);
+    });
+    
+    // Prevent the form from jumping to the search page if a user hits "Enter" 
+    // while there are dynamic results on screen, unless they explicitly click "Search"
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && this.value.trim().length > 1) {
+        // Optional: Keep default behavior to go to the main search page on enter.
+        // To block it and force them to click a dropdown link, uncomment the next line:
+        // e.preventDefault(); 
+      }
+    });
+  });
+</script>
 
 {% schema %}
 {
