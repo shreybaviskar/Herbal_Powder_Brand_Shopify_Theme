@@ -1,0 +1,288 @@
+<section class="day8-product-details day8-product-details-{{ section.id }}">
+
+  <div class="day8-product-details__container">
+
+    {% if product != blank %}
+
+      <div class="day8-product-details__content">
+
+        {% if product.vendor != blank %}
+          <p class="day8-product-details__vendor">
+            {{ product.vendor }}
+          </p>
+        {% endif %}
+
+        {% if product.title != blank %}
+          <h1 class="day8-product-details__title">
+            {{ product.title }}
+          </h1>
+        {% endif %}
+
+        {% if product.description != blank %}
+          <div class="day8-product-details__description">
+            {{ product.description }}
+          </div>
+        {% endif %}
+
+
+        <!-- PRICE -->
+
+        <div class="day8-product-details__price">
+
+          {% if product.compare_at_price > product.price %}
+
+            <span class="day8-product-details__price--sale">
+              {{ product.price | money }}
+            </span>
+
+            <span class="day8-product-details__price--compare">
+              {{ product.compare_at_price | money }}
+            </span>
+
+            <span class="day8-product-details__sale-badge">
+              Sale
+            </span>
+
+          {% else %}
+
+            <span class="day8-product-details__price--regular">
+              {{ product.price | money }}
+            </span>
+
+          {% endif %}
+
+        </div>
+
+
+        <!-- PRODUCT FORM -->
+
+        {% form 'product', product %}
+
+          <input
+            type="hidden"
+            name="id"
+            value="{{ product.selected_or_first_available_variant.id }}"
+          >
+
+          <label for="day8-quantity">
+            Quantity
+          </label>
+
+          <input
+            id="day8-quantity"
+            type="number"
+            name="quantity"
+            value="1"
+            min="1"
+          >
+
+          <button
+            type="submit"
+            {% unless product.available %}
+              disabled
+            {% endunless %}
+          >
+            {% if product.available %}
+              Add to Cart
+            {% else %}
+              Sold Out
+            {% endif %}
+          </button>
+
+        {% endform %}
+
+
+        <!-- VARIANT INFORMATION -->
+
+        <div class="day8-product-details__variant">
+
+          <p>
+            Selected Variant:
+            {{ product.selected_or_first_available_variant.title }}
+          </p>
+
+          <p>
+            Variant ID:
+            {{ product.selected_or_first_available_variant.id }}
+          </p>
+
+          <p>
+            Availability:
+
+            {% if product.selected_or_first_available_variant.available %}
+              Available
+            {% else %}
+              Sold out
+            {% endif %}
+          </p>
+
+        </div>
+
+      </div>
+
+    {% else %}
+
+      <p>No product found.</p>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+
+  .day8-product-details-{{ section.id }} {
+    padding: 50px 20px;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__vendor {
+    margin: 0;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__title {
+    margin: 0;
+    font-size: 42px;
+    line-height: 1.15;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__description {
+    line-height: 1.7;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__price {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 22px;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__price--sale {
+    font-weight: 700;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__price--compare {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__sale-badge {
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 4px;
+  }
+
+  .day8-product-details-{{ section.id }}
+  form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .day8-product-details-{{ section.id }}
+  form input[type="number"] {
+    width: 80px;
+    padding: 10px;
+  }
+
+  .day8-product-details-{{ section.id }}
+  form button {
+    padding: 11px 22px;
+    cursor: pointer;
+  }
+
+  .day8-product-details-{{ section.id }}
+  form button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__variant {
+    padding-top: 10px;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__variant p {
+    margin: 5px 0;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-details__metafields {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-detail {
+    padding: 14px;
+    border: 1px solid #ddd;
+  }
+
+  .day8-product-details-{{ section.id }}
+  .day8-product-detail strong {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  @media screen and (max-width: 749px) {
+
+    .day8-product-details-{{ section.id }}
+    .day8-product-details__title {
+      font-size: 30px;
+    }
+
+    .day8-product-details-{{ section.id }}
+    .day8-product-details__metafields {
+      grid-template-columns: 1fr;
+    }
+
+    .day8-product-details-{{ section.id }}
+    form {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+  }
+
+</style>
+
+{% schema %}
+{
+  "name": "Day 8 Product Details",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Day 8 Product Details"
+    }
+  ]
+}
+{% endschema %}
