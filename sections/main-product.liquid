@@ -58,6 +58,23 @@
                 </div>
               {%- endif -%}
 
+            {%- when 'buy_buttons' -%}
+              <div class="product-page__buy-wrapper" {{ block.shopify_attributes }}>
+                {%- form 'product', product -%}
+                  <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                  <div class="product-form__buttons">
+                    <button type="submit" name="add" class="btn-amazon btn-add-to-cart" {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}>
+                      {%- if product.selected_or_first_available_variant.available -%}
+                        Add to cart
+                      {%- else -%}
+                        Sold out
+                      {%- endif -%}
+                    </button>
+                    {{ form | payment_button }}
+                  </div>
+                {%- endform -%}
+              </div>
+
             {%- when 'amazon_button' -%}
               <div class="product-page__amazon-wrapper" {{ block.shopify_attributes }}>
                 {%- if block.settings.amazon_link != blank -%}
@@ -280,12 +297,19 @@
     color: var(--theme-green, #678b6f);
   }
 
-  /* Amazon Button */
-  .product-page__amazon-wrapper {
+  /* Amazon Button / Cart Button */
+  .product-page__amazon-wrapper,
+  .product-page__buy-wrapper {
     margin: 2rem 0;
     padding: 2rem 0;
     border-top: 1px dashed #ccc;
     border-bottom: 1px dashed #ccc;
+  }
+  
+  .product-page__buy-wrapper {
+    border: none;
+    padding: 0;
+    margin: 1.5rem 0;
   }
 
   .btn-amazon {
@@ -304,10 +328,20 @@
     width: 100%;
     font-family: sans-serif;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
   }
 
   .btn-amazon:hover {
     background-color: #d99244;
+  }
+  
+  .btn-amazon:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .shopify-payment-button__button {
+    width: 100% !important;
   }
 
   .product-page__description {
@@ -535,6 +569,11 @@
           "default": "<ul><li><strong>USDA Certified Organic:</strong> Pure, high-quality product.</li><li><strong>Lab Tested:</strong> Screened for heavy metals.</li><li><strong>Steam Sterilized:</strong> Non-irradiated to maintain flavor.</li></ul>"
         }
       ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Buy buttons",
+      "limit": 1
     },
     {
       "type": "amazon_button",

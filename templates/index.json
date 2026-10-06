@@ -25,6 +25,8 @@
         "heading": "Herbal Powders, Naturally Good",
         "button_label": "Shop on Amazon",
         "button_link": "",
+        "button_label_2": "Shop All Products",
+        "button_link_2": "",
         "subtext": "PURE HERBAL POWDERS FOR YOUR EVERYDAY WELLNESS"
       }
     },
@@ -38,31 +40,6 @@
         "products_to_show": 4,
         "columns_desktop": 4
       }
-    },
-    "17908416762f709050": {
-      "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_c2bb2f7_3B9CVt": {
-          "type": "ai_gen_block_c2bb2f7",
-          "settings": {
-            "heading": "Featured Collections",
-            "desktop_width_percent": 100,
-            "alignment": "center",
-            "heading_size": 36,
-            "mobile_heading_size": 28,
-            "text_color": "#c65d18",
-            "background_color": "#fff7ed",
-            "vertical_padding": 20,
-            "horizontal_padding": 20,
-            "mobile_padding": 16
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_c2bb2f7_3B9CVt"
-      ],
-      "settings": {}
     },
     "clickable_collection_banner_BiK9NM": {
       "type": "clickable-collection-banner",
@@ -114,7 +91,6 @@
     "hero_banner_HXghJN",
     "image_with_text_split_f6bACA",
     "featured_collection_jmy4Wq",
-    "17908416762f709050",
     "clickable_collection_banner_BiK9NM",
     "clickable_collection_banner_MzWHg4",
     "clickable_collection_banner_xwtkGK",
