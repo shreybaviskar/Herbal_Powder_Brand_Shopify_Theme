@@ -1,0 +1,422 @@
+<section class="day9-collection day9-collection-{{ section.id }}">
+
+  <div class="day9-collection__container">
+
+    {% if collection != blank %}
+
+      <!-- COLLECTION HEADER -->
+      <div class="day9-collection__header">
+
+        {% if collection.title != blank %}
+          <h1 class="day9-collection__title">
+            {{ collection.title }}
+          </h1>
+        {% endif %}
+
+        {% if collection.description != blank %}
+          <div class="day9-collection__description">
+            {{ collection.description }}
+          </div>
+        {% endif %}
+
+        <p class="day9-collection__count">
+          {{ collection.products_count }} products
+        </p>
+
+      </div>
+
+      <!-- SORT -->
+      <form
+        method="get"
+        class="day9-sort"
+      >
+        <label for="day9-sort-by">
+          Sort by
+        </label>
+
+        <select
+          id="day9-sort-by"
+          name="sort_by"
+          onchange="this.form.submit()"
+        >
+          <option value="manual" {% if collection.sort_by == 'manual' %}selected{% endif %}>Featured</option>
+          <option value="best-selling" {% if collection.sort_by == 'best-selling' %}selected{% endif %}>Best Selling</option>
+          <option value="title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>Alphabetically, A-Z</option>
+          <option value="title-descending" {% if collection.sort_by == 'title-descending' %}selected{% endif %}>Alphabetically, Z-A</option>
+          <option value="price-ascending" {% if collection.sort_by == 'price-ascending' %}selected{% endif %}>Price, low to high</option>
+          <option value="price-descending" {% if collection.sort_by == 'price-descending' %}selected{% endif %}>Price, high to low</option>
+          <option value="created-ascending" {% if collection.sort_by == 'created-ascending' %}selected{% endif %}>Oldest</option>
+          <option value="created-descending" {% if collection.sort_by == 'created-descending' %}selected{% endif %}>Newest</option>
+        </select>
+      </form>
+
+      <!-- PRODUCTS -->
+      {% paginate collection.products by section.settings.products_per_page %}
+
+        {% if collection.products_count > 0 %}
+
+          <div class="day9-collection__grid">
+            {% for product in collection.products %}
+              {% render 'day7-product-card',
+                product: product,
+                show_vendor: true,
+                show_badge: true
+              %}
+            {% endfor %}
+          </div>
+
+        {% else %}
+
+          <!-- EMPTY COLLECTION -->
+          <div class="day9-collection__empty">
+            <h2>No products found</h2>
+            <p>This collection currently has no products.</p>
+          </div>
+
+        {% endif %}
+
+        <!-- PAGINATION -->
+        {% if paginate.pages > 1 %}
+
+          <nav class="day9-pagination" aria-label="Collection pagination">
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="day9-pagination__link">
+                ← Previous
+              </a>
+            {% endif %}
+
+            <span class="day9-pagination__current">
+              Page {{ paginate.current_page }} of {{ paginate.pages }}
+            </span>
+
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="day9-pagination__link">
+                Next →
+              </a>
+            {% endif %}
+          </nav>
+
+        {% endif %}
+
+      {% endpaginate %}
+
+    {% else %}
+
+      <!-- NO COLLECTION -->
+      <div class="day9-collection__empty">
+        <h2>No collection found</h2>
+        <p>This section requires a collection.</p>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+  /* ==============================
+     COLLECTION SECTION - PHARMA THEME
+  ============================== */
+
+  .day9-collection-{{ section.id }} {
+    padding: 60px 20px;
+    background-color: {{ section.settings.bg_color }};
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Clean, trustworthy font */
+    color: #333333;
+  }
+
+  .day9-collection-{{ section.id }} .day9-collection__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ==============================
+     COLLECTION HEADER
+  ============================== */
+
+  .day9-collection-{{ section.id }} .day9-collection__header {
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .day9-collection-{{ section.id }} .day9-collection__title {
+    margin: 0 0 15px;
+    font-size: 42px;
+    line-height: 1.2;
+    color: {{ section.settings.heading_color }};
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+
+  .day9-collection-{{ section.id }} .day9-collection__description {
+    max-width: 700px;
+    line-height: 1.6;
+    margin: 0 auto 20px auto;
+    color: #555555;
+    font-size: 1.1rem;
+  }
+
+  .day9-collection-{{ section.id }} .day9-collection__count {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: {{ section.settings.accent_color }};
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ==============================
+     SORT
+  ============================== */
+
+  .day9-collection-{{ section.id }} .day9-sort {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding-bottom: 20px;
+  }
+
+  .day9-collection-{{ section.id }} .day9-sort label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+  }
+
+  .day9-collection-{{ section.id }} .day9-sort select {
+    padding: 10px 35px 10px 15px;
+    min-width: 220px;
+    cursor: pointer;
+    background-color: #ffffff;
+    border: 1px solid {{ section.settings.heading_color }};
+    border-radius: 6px;
+    color: #333;
+    font-family: inherit;
+    font-size: 0.95rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234A7856' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .day9-collection-{{ section.id }} .day9-sort select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 120, 86, 0.2);
+  }
+
+  /* ==============================
+     PRODUCT GRID
+  ============================== */
+
+  .day9-collection-{{ section.id }} .day9-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+  }
+
+  /* ==============================
+     EMPTY STATE
+  ============================== */
+
+  .day9-collection-{{ section.id }} .day9-collection__empty {
+    padding: 80px 20px;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px dashed {{ section.settings.heading_color }};
+  }
+
+  .day9-collection-{{ section.id }} .day9-collection__empty h2 {
+    margin-bottom: 15px;
+    color: {{ section.settings.heading_color }};
+  }
+
+  /* ==============================
+     PAGINATION
+  ============================== */
+
+  .day9-collection-{{ section.id }} .day9-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 60px;
+  }
+
+  .day9-collection-{{ section.id }} .day9-pagination__link {
+    text-decoration: none;
+    color: {{ section.settings.heading_color }};
+    border: 1px solid {{ section.settings.heading_color }};
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    background-color: transparent;
+  }
+
+  .day9-collection-{{ section.id }} .day9-pagination__link:hover {
+    background-color: {{ section.settings.heading_color }};
+    color: #ffffff;
+  }
+
+  .day9-collection-{{ section.id }} .day9-pagination__current {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: {{ section.settings.accent_color }};
+    padding: 10px 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(230, 138, 61, 0.2);
+  }
+
+  /* ==============================
+     TABLET
+  ============================== */
+
+  @media screen and (max-width: 990px) {
+    .day9-collection-{{ section.id }} .day9-collection__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .day9-collection-{{ section.id }} .day9-collection__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* ==============================
+     MOBILE
+  ============================== */
+
+  @media screen and (max-width: 749px) {
+    .day9-collection-{{ section.id }} {
+      padding: 40px 16px;
+    }
+
+    .day9-collection-{{ section.id }} .day9-collection__title {
+      font-size: 32px;
+    }
+
+    .day9-collection-{{ section.id }} .day9-collection__grid {
+      grid-template-columns: 1fr 1fr; /* 2 side-by-side on mobile usually looks best for products */
+      gap: 15px;
+    }
+
+    .day9-collection-{{ section.id }} .day9-sort {
+      justify-content: flex-start;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .day9-collection-{{ section.id }} .day9-sort select {
+      width: 100%;
+    }
+
+    .day9-collection-{{ section.id }} .day9-pagination {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .day9-collection-{{ section.id }} .day9-pagination__link,
+    .day9-collection-{{ section.id }} .day9-pagination__current {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+  }
+  /* ==============================
+     DAY 7 PRODUCT CARD (UNIFORM SIZING)
+  ============================== */
+
+  .day7-product-card {
+    height: 100%;
+  }
+
+  .day7-product-card a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .day7-product-card__image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Forces every image container to be a perfect square */
+    background-color: #ffffff; /* Adds a clean white background behind transparent PNGs */
+    overflow: hidden;
+    margin-bottom: 15px;
+    border-radius: 8px; /* Optional: Softens the edges */
+  }
+
+  .day7-product-card__image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Scales the image to fit inside the square without cropping it */
+    padding: 10px; /* Gives the packaging a little breathing room from the edges */
+  }
+
+  .day7-product-card__content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Ensures titles and prices align nicely at the bottom */
+  }
+
+  .day7-product-card__content h3 {
+    font-size: 1rem;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Day 9 Collection Products",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 16,
+      "label": "Products per page"
+    },
+    {
+      "type": "header",
+      "content": "Theme Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#FFF9F2"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Primary/Heading Color (Green)",
+      "default": "#4A7856"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (Orange)",
+      "default": "#E68A3D"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Day 9 Collection Products"
+    }
+  ]
+}
+{% endschema %}
