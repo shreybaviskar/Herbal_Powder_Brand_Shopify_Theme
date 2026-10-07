@@ -16,12 +16,15 @@
           "type": "title",
           "settings": {}
         },
+        "amazon_button_PjGb4n": {
+          "type": "amazon_button",
+          "settings": {
+            "button_label": "Shop on Amazon",
+            "amazon_link": "https://www.amazon.com/lb-Food-Grade-Citric-Cleaning-Preserving-Acido-Polvo-Pure-Premium/dp/B0GTVCCRTH"
+          }
+        },
         "price": {
           "type": "price",
-          "settings": {}
-        },
-        "buy_buttons": {
-          "type": "buy_buttons",
           "settings": {}
         },
         "description": {
@@ -31,8 +34,8 @@
       },
       "block_order": [
         "title",
+        "amazon_button_PjGb4n",
         "price",
-        "buy_buttons",
         "description"
       ],
       "settings": {}

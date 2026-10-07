@@ -24,9 +24,9 @@
         "image": "shopify://shop_images/herbal-powder-brand-orange-green-theme.png",
         "heading": "Herbal Powders, Naturally Good",
         "button_label": "Shop on Amazon",
-        "button_link": "",
+        "button_link": "https://www.amazon.com/stores/page/6F00C5C5-18DF-4704-ADAB-8B3695001531?visitId=ea69a5ae-798a-4f7e-90e2-ccea4afb458c&store_ref=bl_ast_dp_brandlogo_sto",
         "button_label_2": "Shop All Products",
-        "button_link_2": "",
+        "button_link_2": "shopify://collections/all",
         "subtext": "PURE HERBAL POWDERS FOR YOUR EVERYDAY WELLNESS"
       }
     },
@@ -55,7 +55,7 @@
       "name": "Clickable Image Banner",
       "settings": {
         "image": "shopify://shop_images/collection2_-_Copy_-_Copy.jpg",
-        "banner_link": "shopify://collections/all-products",
+        "banner_link": "https://www.amazon.com/stores/page/DE996A6C-3534-4639-8C4F-72A20C4D2501?visitId=ea69a5ae-798a-4f7e-90e2-ccea4afb458c&store_ref=bl_ast_dp_brandlogo_sto",
         "full_width": false
       }
     },

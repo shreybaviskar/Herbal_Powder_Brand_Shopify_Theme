@@ -11,13 +11,6 @@
   "type": "header",
   "name": "t:general.header",
   "sections": {
-    "header": {
-      "type": "header",
-      "settings": {
-        "logo_max_width": 100,
-        "menu": ""
-      }
-    },
     "announcement_bar_mHgwzD": {
       "type": "announcement-bar",
       "name": "Announcement Bar",
@@ -27,6 +20,15 @@
         "link": "",
         "bg_color": "#060d14",
         "text_color": "#ffffff"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "bg_color": "#ffffff",
+        "logo": "shopify://shop_images/final_logo_07843a0c-f2e7-4a2a-b793-6eb4b7c4d642.png",
+        "logo_max_width": 100,
+        "menu": ""
       }
     }
   },
