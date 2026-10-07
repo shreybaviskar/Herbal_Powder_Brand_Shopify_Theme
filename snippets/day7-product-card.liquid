@@ -1,0 +1,86 @@
+<div class="day7-product-card">
+
+  <a href="{{ product.url }}">
+
+    <!-- PRODUCT IMAGE -->
+
+    <div class="day7-product-card__image">
+
+      {% if product.featured_image != blank %}
+
+        <img
+          src="{{ product.featured_image | image_url: width: 600 }}"
+          alt="{{ product.featured_image.alt | escape }}"
+          width="{{ product.featured_image.width }}"
+          height="{{ product.featured_image.height }}"
+        >
+
+      {% endif %}
+
+    </div>
+
+
+    <!-- PRODUCT INFORMATION -->
+
+    <div class="day7-product-card__content">
+
+      {% if product.title != blank %}
+
+        <h3>
+          {{ product.title }}
+        </h3>
+
+      {% endif %}
+
+
+      <!-- VENDOR -->
+
+      {% if show_vendor and product.vendor != blank %}
+
+        <p>
+          {{ product.vendor }}
+        </p>
+
+      {% endif %}
+
+
+      <!-- PRICE -->
+
+      {% render 'day7-price',
+        product: product,
+        show_compare_price: true
+      %}
+
+
+      <!-- SALE BADGE -->
+
+      {% if show_badge and product.compare_at_price > product.price %}
+
+        <span class="day7-sale-badge">
+          Sale
+        </span>
+
+      {% endif %}
+
+
+      <!-- AVAILABILITY -->
+
+      {% if product.available %}
+
+        <span>
+          Available
+        </span>
+
+      {% else %}
+
+        <span>
+          Sold out
+        </span>
+
+      {% endif %}
+
+    </div>
+
+  </a>
+
+</div>

@@ -1,0 +1,23 @@
+<div class="day7-price">
+
+  {% if product.compare_at_price > product.price %}
+
+    <span class="day7-price__sale">
+      {{ product.price | money }}
+    </span>
+
+    {% if show_compare_price %}
+      <span class="day7-price__compare">
+        {{ product.compare_at_price | money }}
+      </span>
+    {% endif %}
+
+  {% else %}
+
+    <span class="day7-price__regular">
+      {{ product.price | money }}
+    </span>
+
+  {% endif %}
+
+</div>
