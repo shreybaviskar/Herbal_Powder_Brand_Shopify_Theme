@@ -1,171 +1,182 @@
 <section class="day10-featured-products day10-featured-products-{{ section.id }}">
   <div class="day10-featured-products__container">
-    {% if section.settings.heading != blank %}
-      <h2 class="day10-featured-products__heading">
-        {{ section.settings.heading }}
-      </h2>
-    {% endif %}
-
-    {% if section.settings.description != blank %}
-      <p class="day10-featured-products__description">
-        {{ section.settings.description }}
-      </p>
-    {% endif %}
-
     {% if section.settings.collection != blank %}
+      <div class="day10-featured-products__grid">
+        {% for product in section.settings.collection.products limit: section.settings.products_limit %}
+          {% render 'day7-product-card', product: product, show_vendor: true, show_badge: true %}
+        {% endfor %}
+      </div>
 
-  <div class="day10-featured-products__grid">
+      {% if section.settings.show_view_all and section.settings.collection.url != blank %}
+        <div class="day10-featured-products__view-all">
+          <a href="{{ section.settings.collection.url }}">
+            {{ section.settings.view_all_text }}
+          </a>
+        </div>
+      {% endif %}
 
-    {% for product in section.settings.collection.products
-      limit: section.settings.products_limit %}
-
-      {% render 'day7-product-card',
-        product: product,
-        show_vendor: true,
-        show_badge: true
-      %}
-
-    {% endfor %}
-
-  </div>
-
-{% else %}
-
-  <p>
-    Please select a collection.
-  </p>
-
-{% endif %}
+    {% else %}
+      <div class="day10-featured-products__empty">
+        <p>Please select a collection to display products.</p>
+      </div>
+    {% endif %}
   </div>
 </section>
 
 <style>
-  .day10-featured-products-{{ section.id }} {
-    padding: 60px 20px;
-  }
+      .day10-featured-products-{{ section.id }} {
+        padding: 60px 20px;
+      }
 
 
-  .day10-featured-products-{{ section.id }}
-  .day10-featured-products__container {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
+      .day10-featured-products-{{ section.id }}
+      .day10-featured-products__container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
 
 
-  .day10-featured-products-{{ section.id }}
-  .day10-featured-products__heading {
-    margin: 0 0 12px;
+      .day10-featured-products-{{ section.id }}
+      .day10-featured-products__heading {
+        margin: 0 0 12px;
+        text-align: center;
+        font-size: 40px;
+      }
+
+
+      .day10-featured-products-{{ section.id }}
+      .day10-featured-products__description {
+        max-width: 700px;
+        margin: 0 auto 40px;
+        text-align: center;
+        line-height: 1.6;
+      }
+
+
+      .day10-featured-products-{{ section.id }}
+      .day10-featured-products__grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+      }
+
+
+      .day10-featured-products-{{ section.id }}
+      .day10-product-card {
+        overflow: hidden;
+      }
+
+
+      .day10-featured-products-{{ section.id }}
+      .day10-product-card img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+
+      .day10-featured-products-{{ section.id }}
+      .day10-product-card__content {
+        padding: 16px 0;
+      }
+
+
+      .day10-featured-products-{{ section.id }}
+      .day10-product-card__vendor {
+        margin: 0 0 6px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.7;
+      }
+
+
+      .day10-featured-products-{{ section.id }}
+      .day10-product-card__title {
+        margin: 0 0 10px;
+        font-size: 20px;
+      }
+
+
+      .day10-featured-products-{{ section.id }}
+      .day10-product-card__title a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+
+      .day10-featured-products-{{ section.id }}
+      .day10-product-card__price {
+        margin-bottom: 15px;
+        font-weight: 600;
+      }
+
+
+      .day10-featured-products-{{ section.id }}
+      .day10-product-card__button {
+        display: inline-block;
+        padding: 10px 18px;
+        text-decoration: none;
+        border: 1px solid currentColor;
+      }
+
+
+      @media screen and (max-width: 990px) {
+
+        .day10-featured-products-{{ section.id }}
+        .day10-featured-products__grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+      }
+
+
+      @media screen and (max-width: 749px) {
+
+        .day10-featured-products-{{ section.id }} {
+          padding: 40px 16px;
+        }
+
+
+        .day10-featured-products-{{ section.id }}
+        .day10-featured-products__heading {
+          font-size: 32px;
+        }
+
+
+        .day10-featured-products-{{ section.id }}
+        .day10-featured-products__grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+
+      }
+      .day10-featured-products-{{ section.id }}
+    .day10-featured-products__view-all {
+      margin-top: 35px;
+      text-align: center;
+    }
+
+    .day10-featured-products-{{ section.id }}
+    .day10-featured-products__view-all a {
+      display: inline-block;
+      padding: 12px 24px;
+      border: 1px solid currentColor;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .day10-featured-products-{{ section.id }}
+    .day10-featured-products__view-all a:hover {
+      opacity: 0.7;
+    }
+
+    .day10-featured-products-{{ section.id }}
+  .day10-featured-products__empty {
+    padding: 30px;
     text-align: center;
-    font-size: 40px;
-  }
-
-
-  .day10-featured-products-{{ section.id }}
-  .day10-featured-products__description {
-    max-width: 700px;
-    margin: 0 auto 40px;
-    text-align: center;
-    line-height: 1.6;
-  }
-
-
-  .day10-featured-products-{{ section.id }}
-  .day10-featured-products__grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-  }
-
-
-  .day10-featured-products-{{ section.id }}
-  .day10-product-card {
-    overflow: hidden;
-  }
-
-
-  .day10-featured-products-{{ section.id }}
-  .day10-product-card img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-
-  .day10-featured-products-{{ section.id }}
-  .day10-product-card__content {
-    padding: 16px 0;
-  }
-
-
-  .day10-featured-products-{{ section.id }}
-  .day10-product-card__vendor {
-    margin: 0 0 6px;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    border: 1px dashed currentColor;
     opacity: 0.7;
-  }
-
-
-  .day10-featured-products-{{ section.id }}
-  .day10-product-card__title {
-    margin: 0 0 10px;
-    font-size: 20px;
-  }
-
-
-  .day10-featured-products-{{ section.id }}
-  .day10-product-card__title a {
-    text-decoration: none;
-    color: inherit;
-  }
-
-
-  .day10-featured-products-{{ section.id }}
-  .day10-product-card__price {
-    margin-bottom: 15px;
-    font-weight: 600;
-  }
-
-
-  .day10-featured-products-{{ section.id }}
-  .day10-product-card__button {
-    display: inline-block;
-    padding: 10px 18px;
-    text-decoration: none;
-    border: 1px solid currentColor;
-  }
-
-
-  @media screen and (max-width: 990px) {
-
-    .day10-featured-products-{{ section.id }}
-    .day10-featured-products__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-  }
-
-
-  @media screen and (max-width: 749px) {
-
-    .day10-featured-products-{{ section.id }} {
-      padding: 40px 16px;
-    }
-
-
-    .day10-featured-products-{{ section.id }}
-    .day10-featured-products__heading {
-      font-size: 32px;
-    }
-
-
-    .day10-featured-products-{{ section.id }}
-    .day10-featured-products__grid {
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
   }
 </style>
 
@@ -173,33 +184,45 @@
 {
   "name": "Day 10 Featured Products",
   "settings": [
-  {
-    "type": "text",
-    "id": "heading",
-    "label": "Heading",
-    "default": "Featured Products"
-  },
-  {
-    "type": "textarea",
-    "id": "description",
-    "label": "Description",
-    "default": "Discover our latest products."
-  },
-  {
-    "type": "collection",
-    "id": "collection",
-    "label": "Collection"
-  },
-  {
-    "type": "range",
-    "id": "products_limit",
-    "label": "Products to show",
-    "min": 2,
-    "max": 12,
-    "step": 1,
-    "default": 4
-  }
-],
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured Products"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Discover our latest products."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Products to show",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View all button text",
+      "default": "View All Products"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show view all button",
+      "default": true
+    }
+  ],
   "presets": [
     {
       "name": "Day 10 Featured Products"
