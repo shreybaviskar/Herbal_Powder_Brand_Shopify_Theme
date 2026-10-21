@@ -46,7 +46,7 @@
       "name": "Clickable Image Banner",
       "settings": {
         "image": "shopify://shop_images/collection1.jpg",
-        "banner_link": "shopify://collections/all-products",
+        "banner_link": "shopify://collections/food-ingredients",
         "full_width": false
       }
     },
@@ -55,7 +55,7 @@
       "name": "Clickable Image Banner",
       "settings": {
         "image": "shopify://shop_images/collection2_-_Copy_-_Copy.jpg",
-        "banner_link": "https://www.amazon.com/stores/page/DE996A6C-3534-4639-8C4F-72A20C4D2501?visitId=ea69a5ae-798a-4f7e-90e2-ccea4afb458c&store_ref=bl_ast_dp_brandlogo_sto",
+        "banner_link": "shopify://collections/organic-skin-herbs",
         "full_width": false
       }
     },
@@ -73,7 +73,7 @@
       "name": "Clickable Image Banner",
       "settings": {
         "image": "shopify://shop_images/collection4_-_Copy_2.jpg",
-        "banner_link": "shopify://collections/all-products",
+        "banner_link": "shopify://collections/organic-tea",
         "full_width": false
       }
     },
@@ -82,7 +82,7 @@
       "name": "Clickable Image Banner",
       "settings": {
         "image": "shopify://shop_images/collection5_-_Copy.jpg",
-        "banner_link": "shopify://collections/all-products",
+        "banner_link": "shopify://collections/pure-organic-herbs",
         "full_width": false
       }
     }
