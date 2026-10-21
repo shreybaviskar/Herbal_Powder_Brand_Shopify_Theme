@@ -1,13 +1,22 @@
 <header class="site-header" style="background-color: {{ section.settings.bg_color }};">
   <div class="header-container">
     
+    <!-- Mobile Menu Toggle (Hamburger) -->
+    <button type="button" class="mobile-menu-toggle" id="MobileMenuToggle" aria-label="Menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
     <!-- Logo -->
     <div class="header-logo">
       <a href="{{ routes.root_url }}">
         {%- if section.settings.logo != blank -%}
           <img src="{{ section.settings.logo | img_url: 'master' }}" 
                alt="{{ shop.name }}" 
-               style="max-width: {{ section.settings.logo_max_width }}px;">
+               class="header-logo__image">
         {%- else -%}
           <span class="logo-placeholder">{{ shop.name }}</span>
         {%- endif -%}
@@ -15,26 +24,35 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="header-nav">
+    <nav class="header-nav" id="HeaderNav">
       <ul class="nav-list">
         {%- assign menu_linklist = section.settings.menu -%}
         
-        <!-- Fallback if the setting is empty -->
         {%- if menu_linklist == blank -%}
           {%- assign menu_linklist = linklists['main-menu'] -%}
         {%- endif -%}
 
         {%- for link in menu_linklist.links -%}
-          <li class="nav-item">
+          <li class="nav-item {% if link.links.size > 0 %}has-dropdown{% endif %}">
             <a href="{{ link.url }}" class="nav-link {% if link.active %}nav-link--active{% endif %}">
               {{ link.title }}
               {%- if link.links.size > 0 -%}
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.2"/></svg>
               {%- endif -%}
             </a>
+            
+            <!-- Sub-menu Dropdown -->
+            {%- if link.links.size > 0 -%}
+              <ul class="nav-dropdown">
+                {%- for child_link in link.links -%}
+                  <li class="nav-dropdown__item">
+                    <a href="{{ child_link.url }}" class="nav-dropdown__link">{{ child_link.title }}</a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
           </li>
         {%- else -%}
-          <!-- This will show up if the menu is still not linking properly -->
           <li class="nav-item"><span class="nav-link" style="color: red;">Please select a menu in Theme settings</span></li>
         {%- endfor -%}
       </ul>
@@ -42,15 +60,15 @@
 
     <!-- Icons -->
     <div class="header-icons">
+      
       <!-- Dropdown Search -->
       <div class="header-search">
         <button type="button" class="icon-link search-toggle" id="SearchToggle" aria-expanded="false">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </button>
 
         <div class="search-dropdown" id="SearchDropdown">
           <form action="{{ routes.search_url }}" method="get" role="search" class="search-dropdown__form">
-            <!-- Limit search to products and collections -->
             <input type="hidden" name="type" value="product,collection">
             <input type="hidden" name="options[prefix]" value="last">
             
@@ -67,28 +85,125 @@
       <!-- Account Icon -->
       {%- if shop.customer_accounts_enabled -%}
         <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" class="icon-link">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         </a>
       {%- endif -%}
       
       <!-- Cart Icon -->
       <a href="{{ routes.cart_url }}" class="icon-link">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
       </a>
+
     </div>
 
   </div>
 </header>
 
 <style>
-  /* Ensure header container is the anchor for the absolute dropdown */
-  .header-container {
+  /* Base / Mobile-First Styles */
+  .site-header {
     position: relative;
-    /* ... keep your existing properties ... */
+    border-bottom: 1px solid #000;
+    padding: 10px 15px; 
+    font-family: Courier, monospace; 
   }
 
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1600px;
+    margin: 0 auto;
+    flex-wrap: nowrap; /* Forces a single line layout */
+    gap: 10px;
+  }
+
+  /* Hamburger Menu Button */
+  .mobile-menu-toggle {
+    display: block;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: #000;
+  }
+
+  .header-logo {
+    flex: 1; /* Pushes icons to the right, stays centered between them */
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 10px;
+  }
+
+  .header-logo a {
+    text-decoration: none;
+    color: #000;
+  }
+
+  .header-logo__image {
+    display: block;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    max-width: 100px !important; /* Constrains logo on mobile so icons fit cleanly */
+  }
+
+  /* Navigation Drawer (Mobile) */
+  .header-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid #000;
+    z-index: 100;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  }
+
+  .header-nav.is-active {
+    display: block;
+  }
+
+  .header-nav .nav-list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 15px 20px;
+    gap: 15px;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-link--active {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* Icons */
+  .header-icons {
+    display: flex;
+    gap: 12px; /* Tighter gap for mobile */
+    align-items: center;
+  }
+
+  .icon-link {
+    color: #000;
+    text-decoration: none;
+    display: flex;
+  }
+
+  /* Search Dropdown Overrides */
   .header-search {
-    position: relative;
+    position: static; /* Overridden for mobile to use full width */
     display: flex;
     align-items: center;
   }
@@ -103,11 +218,12 @@
   .search-dropdown {
     display: none;
     position: absolute;
-    top: 150%;
+    top: 100%;
     right: 0;
-    width: 350px;
+    left: 0;
+    width: 100%;
     background-color: #ffffff;
-    border: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     padding: 1.5rem;
     z-index: 100;
@@ -133,11 +249,11 @@
 
   .search-dropdown__input:focus {
     outline: none;
-    border-color: #678b6f; /* Theme Green */
+    border-color: #678b6f;
   }
 
   .search-dropdown__submit {
-    background-color: #eba14e; /* Theme Orange */
+    background-color: #eba14e;
     color: #fff;
     border: none;
     padding: 10px 15px;
@@ -153,138 +269,159 @@
     overflow-y: auto;
   }
 
-  .predictive-group {
-    margin-bottom: 1.5rem;
-  }
+  /* Predictive Search Results Styles */
+  .predictive-group { margin-bottom: 1.5rem; }
+  .predictive-group h4 { margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #678b6f; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 0.25rem; }
+  .predictive-group ul { list-style: none; padding: 0; margin: 0; }
+  .predictive-group li { margin-bottom: 0.5rem; }
+  .predictive-collection { text-decoration: none; color: #333; font-size: 0.9rem; font-family: sans-serif; }
+  .predictive-collection:hover { color: #eba14e; }
+  .predictive-product { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #333; }
+  .predictive-product img { width: 50px; height: 50px; object-fit: cover; background: #f4f4f4; }
+  .predictive-product__info { display: flex; flex-direction: column; }
+  .predictive-product__title { font-size: 0.85rem; font-family: sans-serif; }
+  .predictive-product__price { font-size: 0.8rem; color: #eba14e; font-weight: bold; font-family: monospace; }
+  .predictive-empty { font-family: sans-serif; font-size: 0.9rem; color: #666; text-align: center; padding: 1rem 0; }
 
-  .predictive-group h4 {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.85rem;
-    color: #678b6f;
-    text-transform: uppercase;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.25rem;
-  }
+  /* Desktop Adjustments */
+  @media (min-width: 768px) {
+    .site-header {
+      padding: 0 40px; 
+    }
+    
+    .mobile-menu-toggle {
+      display: none; /* Hides hamburger on desktop */
+    }
 
-  .predictive-group ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
+    .header-logo {
+      flex: none;
+      padding-left: 0;
+    }
 
-  .predictive-group li {
-    margin-bottom: 0.5rem;
-  }
+    .header-logo__image {
+      max-width: {{ section.settings.logo_max_width }}px !important; 
+    }
+    
+    .header-nav {
+      display: flex;
+      position: static;
+      width: auto;
+      border: none;
+      box-shadow: none;
+      margin-left: 48px; 
+      margin-right: auto;
+    }
+    
+    .header-nav .nav-list {
+      flex-direction: row;
+      gap: 38px; 
+      padding: 0;
+    }
+    
+    .header-icons {
+      gap: 24px; 
+    }
 
-  .predictive-collection {
-    text-decoration: none;
-    color: #333;
-    font-size: 0.9rem;
-    font-family: sans-serif;
-  }
+    .header-search {
+      position: relative; 
+    }
 
-  .predictive-collection:hover {
-    color: #eba14e;
+    .search-dropdown {
+      top: 150%;
+      left: auto;
+      right: 0;
+      width: 350px;
+      border: 1px solid #e0e0e0;
+    }
   }
-
-  .predictive-product {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    color: #333;
-  }
-
-  .predictive-product img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    background: #f4f4f4;
-  }
-
-  .predictive-product__info {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .predictive-product__title {
-    font-size: 0.85rem;
-    font-family: sans-serif;
-  }
-
-  .predictive-product__price {
-    font-size: 0.8rem;
-    color: #eba14e;
-    font-weight: bold;
-    font-family: monospace;
+  /* --- Dropdown Menu Styles --- */
+  .nav-item.has-dropdown {
+    position: relative;
   }
   
-  .predictive-empty {
-    font-family: sans-serif;
-    font-size: 0.9rem;
-    color: #666;
-    text-align: center;
-    padding: 1rem 0;
-  }
-  .header-nav {
-    margin-left: 40px; /* Adjust this value for the space between logo and menu */
-    margin-right: auto; /* Pushes the icons to the far right */
-  }
-
-  .site-header {
-    border-bottom: 1px solid #000;
-    padding: 20px 40px;
-    font-family: Courier, monospace; /* Matches the skeletal font in the image */
-  }
-  .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1600px;
-    margin: 0 auto;
-  }
-  .header-logo a {
-    text-decoration: none;
-    color: #000;
-  }
-  .header-logo img {
-    display: block;
-    background: transparent;
-    padding: 0;
-  }
-  .header-nav .nav-list {
-    display: flex;
+  .nav-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    padding: 10px 0;
+    min-width: 200px;
     list-style: none;
     margin: 0;
-    padding: 0;
-    gap: 32px;
+    z-index: 200;
   }
-  .nav-link {
+  
+  /* Show dropdown on hover */
+  .nav-item.has-dropdown:hover .nav-dropdown {
+    display: block;
+  }
+  
+  .nav-dropdown__item {
+    padding: 0;
+  }
+  
+  .nav-dropdown__link {
+    display: block;
+    padding: 10px 20px;
     text-decoration: none;
     color: #333;
+    font-family: sans-serif;
     font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    transition: background-color 0.2s, color 0.2s;
+    text-align: left;
   }
-  .nav-link--active {
-    text-decoration: underline;
-    text-underline-offset: 4px;
+  
+  .nav-dropdown__link:hover {
+    background-color: #f9f9f9;
+    color: #eba14e; /* Theme Orange */
   }
-  .header-icons {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  .icon-link {
-    color: #000;
-    text-decoration: none;
-    display: flex;
+  
+  /* Mobile drawer adjustments for the dropdown */
+  @media screen and (max-width: 767px) {
+    .nav-item.has-dropdown {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+    
+    .nav-dropdown {
+      position: static;
+      transform: none;
+      box-shadow: none;
+      border: none;
+      border-left: 2px solid #eba14e;
+      margin-top: 10px;
+      margin-left: 10px;
+      padding: 0;
+      min-width: 100%;
+    }
   }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- Mobile Menu Toggle ---
+    const mobileMenuBtn = document.getElementById('MobileMenuToggle');
+    const headerNav = document.getElementById('HeaderNav');
+    
+    if (mobileMenuBtn && headerNav) {
+      mobileMenuBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        headerNav.classList.toggle('is-active');
+        // Close search if open
+        if (dropdown && dropdown.classList.contains('is-active')) {
+          dropdown.classList.remove('is-active');
+        }
+      });
+    }
+
+    // --- Search Dropdown Logic ---
     const toggleBtn = document.getElementById('SearchToggle');
     const dropdown = document.getElementById('SearchDropdown');
     const input = document.getElementById('SearchDropdownInput');
@@ -293,19 +430,21 @@
 
     if (!toggleBtn || !dropdown || !input || !resultsContainer) return;
 
-    // Toggle dropdown visibility
     toggleBtn.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
       dropdown.classList.toggle('is-active');
       if (dropdown.classList.contains('is-active')) {
         input.focus();
+        // Close mobile menu if open
+        if (headerNav && headerNav.classList.contains('is-active')) {
+          headerNav.classList.remove('is-active');
+        }
       }
     });
 
-    // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
-      if (!dropdown.contains(e.target) && !toggleBtn.contains(e.target) && !input.contains(e.target)) {
+      if (!dropdown.contains(e.target) && !toggleBtn.contains(e.target)) {
         dropdown.classList.remove('is-active');
       }
     });
@@ -321,18 +460,15 @@
         return;
       }
 
-      // Show instant visual feedback that it is searching
       resultsContainer.innerHTML = '<div class="predictive-empty">Searching...</div>';
       resultsContainer.style.display = 'block';
 
-      // Wait 300ms after the user stops typing to fetch results
       debounceTimer = setTimeout(() => {
-        // Use Shopify's official predictive search API with prefix matching
-        const fetchUrl = `/search/suggest.json?q=${encodeURIComponent(query)}*&resources[type]=product,collection&resources[limit]=6&resources[options][prefix]=last`;
+        const fetchUrl = `/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product,collection&resources[limit]=6&resources[options][prefix]=last&resources[options][unavailable_products]=hide`;
 
         fetch(fetchUrl)
           .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
+            if (!response.ok) throw new Error('Network error');
             return response.json();
           })
           .then(data => {
@@ -340,7 +476,6 @@
             const collections = data.resources.results.collections || [];
             let html = '';
 
-            // Render Collections
             if (collections.length > 0) {
               html += '<div class="predictive-group"><h4>Collections</h4><ul>';
               collections.forEach(collection => {
@@ -349,7 +484,6 @@
               html += '</ul></div>';
             }
 
-            // Render Products
             if (products.length > 0) {
               html += '<div class="predictive-group"><h4>Products</h4><ul>';
               products.forEach(product => {
@@ -366,29 +500,16 @@
               html += '</ul></div>';
             }
 
-            // If no results are found
             if (html === '') {
               html = '<div class="predictive-empty">No results found for "' + query + '"</div>';
             }
 
-            // Inject the dynamic HTML into the dropdown
             resultsContainer.innerHTML = html;
           })
           .catch(error => {
-            console.error("Predictive search error:", error);
             resultsContainer.innerHTML = '<div class="predictive-empty">Error loading results. Please press Enter to search.</div>';
           });
       }, 300);
-    });
-    
-    // Prevent the form from jumping to the search page if a user hits "Enter" 
-    // while there are dynamic results on screen, unless they explicitly click "Search"
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && this.value.trim().length > 1) {
-        // Optional: Keep default behavior to go to the main search page on enter.
-        // To block it and force them to click a dropdown link, uncomment the next line:
-        // e.preventDefault(); 
-      }
     });
   });
 </script>

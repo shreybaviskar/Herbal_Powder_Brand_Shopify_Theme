@@ -27,7 +27,7 @@
       "settings": {
         "bg_color": "#ffffff",
         "logo": "shopify://shop_images/final_logo_07843a0c-f2e7-4a2a-b793-6eb4b7c4d642.png",
-        "logo_max_width": 100,
+        "logo_max_width": 200,
         "menu": ""
       }
     }
