@@ -15,7 +15,11 @@
       "type": "footer",
       "settings": {
         "menu": "",
-        "show_payment_icons": true
+        "show_payment_icons": true,
+        "social_instagram_link": "https://www.instagram.com/shrey22kar/?hl=en",
+        "social_linkedin_link": "https://www.linkedin.com/in/shrey-baviskar/?isSelfProfile=true",
+        "social_tiktok_link": "https://www.youtube.com/",
+        "social_facebook_link": "https://github.com/shreybaviskar"
       }
     }
   },

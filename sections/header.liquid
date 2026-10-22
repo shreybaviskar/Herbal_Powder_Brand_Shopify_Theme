@@ -334,6 +334,7 @@
       border: 1px solid #e0e0e0;
     }
   }
+
   /* --- Dropdown Menu Styles --- */
   .nav-item.has-dropdown {
     position: relative;
@@ -355,8 +356,9 @@
     z-index: 200;
   }
   
-  /* Show dropdown on hover */
-  .nav-item.has-dropdown:hover .nav-dropdown {
+  /* Show dropdown on hover (desktop) or when active (mobile) */
+  .nav-item.has-dropdown:hover .nav-dropdown,
+  .nav-item.has-dropdown.is-open .nav-dropdown {
     display: block;
   }
   
@@ -406,7 +408,33 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     
-    // --- Mobile Menu Toggle ---
+    // --- Mobile Dropdown Menu Toggle (Link Disabled on Mobile) ---
+    const dropdownLinks = document.querySelectorAll('.nav-item.has-dropdown > a');
+    
+    dropdownLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        // Only intercept and disable the link on mobile screen widths
+        if (window.innerWidth <= 767) {
+          e.preventDefault(); // Completely disables the link navigation on mobile
+          
+          const parentLi = this.parentElement;
+          
+          // Toggle the dropdown open or closed
+          if (parentLi.classList.contains('is-open')) {
+            parentLi.classList.remove('is-open');
+          } else {
+            // Close any other open dropdowns first
+            document.querySelectorAll('.nav-item.has-dropdown').forEach(item => {
+              item.classList.remove('is-open');
+            });
+            // Open the tapped dropdown
+            parentLi.classList.add('is-open');
+          }
+        }
+      });
+    });
+
+    // --- Mobile Menu Drawer Toggle (Hamburger) ---
     const mobileMenuBtn = document.getElementById('MobileMenuToggle');
     const headerNav = document.getElementById('HeaderNav');
     
@@ -415,6 +443,7 @@
         e.preventDefault();
         headerNav.classList.toggle('is-active');
         // Close search if open
+        const dropdown = document.getElementById('SearchDropdown');
         if (dropdown && dropdown.classList.contains('is-active')) {
           dropdown.classList.remove('is-active');
         }
@@ -547,4 +576,4 @@
     }
   ]
 }
-{% endschema %}
+{% endschema %}      

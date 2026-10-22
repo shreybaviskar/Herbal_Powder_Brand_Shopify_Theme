@@ -15,7 +15,7 @@
         "step_1": {
           "type": "step",
           "settings": {
-            "step_text": "Locate the batch number on the bottom of your Spice Profile product."
+            "step_text": "Locate the batch number on the bottom of your product."
           }
         },
         "step_2": {
